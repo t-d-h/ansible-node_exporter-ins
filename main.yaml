@@ -1,0 +1,43 @@
+# ansible-playbook main.yaml -i inventory --extra-vars "exporter_ver"='1.5.0'
+- name: Run
+  hosts: exporter
+  tasks:
+  - name: Download binary
+    get_url:
+      url: https://github.com/prometheus/node_exporter/releases/download/v{{exporter_ver}}/node_exporter-{{exporter_ver}}.linux-amd64.tar.gz
+      dest: /tmp
+      mode: '06440'
+  - name: Create user for node_exporter
+    user:
+      name: node_exporter
+      shell: /bin/false
+      create_home: false
+  - name: Extract binary file
+    unarchive:
+      src: /tmp/node_exporter-{{exporter_ver}}.linux-amd64.tar.gz
+      dest: /tmp
+      remote_src: yes
+  - name: Copy binary
+    copy: 
+      src: /tmp/node_exporter-{{exporter_ver}}.linux-amd64/
+      dest: /usr/local/bin/node_exporter
+      owner: node_exporter 
+      group: node_exporter
+      mode: 0744
+      remote_src: yes
+  - name: Copy serviced
+    template: 
+      src: node_exporter.service
+      dest: /etc/systemd/system/
+      owner: root 
+      group: root
+      mode: '0755'
+  - name: reload system daemon
+    systemd:
+      name: node_exporter
+      daemon_reload: yes
+      state: started
+      enabled: yes
+- name: Add host to prometheus
+  host: prom
+  
