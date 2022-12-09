@@ -38,6 +38,3 @@
       daemon_reload: yes
       state: started
       enabled: yes
-- name: Add host to prometheus
-  host: prom
-  
