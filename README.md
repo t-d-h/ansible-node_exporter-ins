@@ -1,4 +1,4 @@
-# ansible-ins-prom
+# ansible-node_exporter-ins
 This is a ansible playbook to install a node_exporter on debian, amd64 architecture. I'm going to add "auto adding node to prometheus" in future 😄
 
 # Run:
